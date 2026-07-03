@@ -51,4 +51,9 @@ dependencies {
     implementation("androidx.navigation:navigation-ui:2.7.7")
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-firestore")
+    // Required for Login/Register
+    implementation("com.google.firebase:firebase-auth")
+    // Explicitly declaring Lifecycle components is best practice in MVVM
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
 }

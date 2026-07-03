@@ -1,11 +1,10 @@
-package com.example.myapplication.ui; // Ensure this matches your package
+package com.example.myapplication; // Ensure this matches your package
 
 import android.os.Bundle;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myapplication.R;
-import com.example.myapplication.models.Product;
+import com.example.myapplication.model.Product;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
