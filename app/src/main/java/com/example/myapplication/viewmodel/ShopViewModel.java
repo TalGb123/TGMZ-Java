@@ -106,12 +106,26 @@ public class ShopViewModel extends ViewModel {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Product> productsList = new ArrayList<>();
+                    PcBuild current = currentBuild.getValue();
 
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         Product product = document.toObject(Product.class);
                         product.setId(document.getId());
+
+                        // Evaluate compatibility before adding to the list
+                        if (current != null) {
+                            com.example.myapplication.utils.CompatibilityEngine.evaluate(product, current);
+                        }
+
                         productsList.add(product);
                     }
+
+                    // Sort: Compatible first, Warnings second, Errors last
+                    productsList.sort((p1, p2) -> {
+                        int score1 = !p1.isCompatible() ? 3 : (p1.isWarning() ? 2 : 1);
+                        int score2 = !p2.isCompatible() ? 3 : (p2.isWarning() ? 2 : 1);
+                        return Integer.compare(score1, score2);
+                    });
 
                     categoryProducts.setValue(productsList);
                     isLoading.setValue(false);
@@ -120,5 +134,35 @@ public class ShopViewModel extends ViewModel {
                     Log.e("ShopViewModel", "Error fetching products from Firestore", e);
                     isLoading.setValue(false);
                 });
+    }
+
+    public void clearSlot(String categoryId) {
+        PcBuild build = currentBuild.getValue();
+        if (build == null) return;
+
+        switch(categoryId) {
+            case "CPU": build.setCpu(null); break;
+            case "CPUCooler": build.setCpuCooler(null); break;
+            case "Motherboard": build.setMotherboard(null); break;
+            case "Memory": build.setRam(null); break;
+            case "Storage": build.setStorage(null); break;
+            case "VideoCard": build.setGpu(null); break;
+            case "Case": build.setPcCase(null); break;
+            case "PowerSupply": build.setPsu(null); break;
+        }
+        recalculateBuildCompatibility(build);
+        currentBuild.setValue(build);
+    }
+
+    private void recalculateBuildCompatibility(PcBuild build) {
+        // This makes selected parts check themselves against the rest of the build
+        if (build.getCpu() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getCpu(), build);
+        if (build.getCpuCooler() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getCpuCooler(), build);
+        if (build.getMotherboard() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getMotherboard(), build);
+        if (build.getRam() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getRam(), build);
+        if (build.getStorage() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getStorage(), build);
+        if (build.getGpu() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getGpu(), build);
+        if (build.getPcCase() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getPcCase(), build);
+        if (build.getPowerSupply() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getPowerSupply(), build);
     }
 }

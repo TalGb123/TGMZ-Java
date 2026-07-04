@@ -14,7 +14,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.myapplication.databinding.FragmentProductListBinding;
-import com.example.myapplication.ui.builder.adapters.ProductAdapter;
+import com.example.myapplication.adapter.ProductAdapter;
 import com.example.myapplication.viewmodel.ShopViewModel;
 
 import java.util.ArrayList;
@@ -37,7 +37,8 @@ public class ProductListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (getArguments() != null) {
-            categoryName = getArguments().getString("categoryName");
+            // Retrieving data using SafeArgs
+            categoryName = ProductListFragmentArgs.fromBundle(getArguments()).getCategoryName();
             binding.tvCategoryTitle.setText("Select " + categoryName);
         }
 
@@ -51,7 +52,6 @@ public class ProductListFragment extends Fragment {
         setupObservers();
 
         if (categoryName != null) {
-            binding.progressBar.setVisibility(View.VISIBLE);
             shopViewModel.fetchProductsByCategory(categoryName);
         }
     }
@@ -70,7 +70,7 @@ public class ProductListFragment extends Fragment {
                 case "Case": shopViewModel.setPcCase(product); break;
                 case "PowerSupply": shopViewModel.setPsu(product); break;
             }
-            Navigation.findNavController(requireView()).popBackStack();
+            Navigation.findNavController(binding.getRoot()).popBackStack();
         });
 
         binding.rvProducts.setAdapter(adapter);

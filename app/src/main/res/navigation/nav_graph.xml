@@ -49,6 +49,11 @@
     <fragment
         android:id="@+id/productListFragment"
         android:name="com.example.myapplication.ui.builder.ProductListFragment"
-        android:label="ProductListFragment" />
+        android:label="Select Component"
+        tools:layout="@layout/fragment_product_list">
+        <argument
+            android:name="categoryName"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

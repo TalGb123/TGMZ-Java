@@ -10,7 +10,8 @@
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,28 +28,55 @@
             android:scaleType="fitCenter" />
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp">
 
-            <TextView
-                android:id="@+id/tv_category_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="CPU / Processor"
-                android:textStyle="bold"
-                android:textSize="18sp" />
+        <TextView
+            android:id="@+id/tv_category_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:id="@+id/tv_selected_product"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tap to select a component..."
-                android:textColor="#888888"
-                android:layout_marginTop="4dp"/>
+                android:text="@string/empty_slot_text"
+                android:textColor="?android:attr/textColorSecondary"/>
+
+            <ImageView
+                android:id="@+id/iv_alert_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:src="@android:drawable/stat_notify_error"
+                android:visibility="gone" />
         </LinearLayout>
+    </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btn_clear_slot"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            app:tint="?attr/colorError"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginEnd="12dp"
+            android:visibility="gone" />
 
         <ImageView
             android:id="@+id/iv_action_icon"
@@ -56,6 +84,5 @@
             android:layout_height="24dp"
             android:src="@android:drawable/ic_input_add"
             app:tint="?attr/colorControlNormal" />
-
     </LinearLayout>
 </androidx.cardview.widget.CardView>

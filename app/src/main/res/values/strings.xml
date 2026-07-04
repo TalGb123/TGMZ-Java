@@ -25,6 +25,13 @@
     <string name="error_invalid_phone">Must start with 05 and contain 10 digits.</string>
     <string name="error_invalid_age">Must be at least 21 years old.</string>
     <string name="error_weak_password">8+ chars, uppercase, lowercase, number &amp; symbol.</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="title_spec_builder">Your PC Build</string>
+    <string name="title_select_component">Select Component</string>
+    <string name="estimated_total">Estimated Total:</string>
+    <string name="default_price">₪0.00</string>
+    <string name="empty_slot_text">Tap to select a component...</string>
+    <string name="lock_title">Unlock the PC Builder</string>
+    <string name="lock_subtitle">Create an account or log in to start saving your custom PC builds to the cloud.</string>
+    <string name="btn_login_register">Log In / Register</string>
 </resources>

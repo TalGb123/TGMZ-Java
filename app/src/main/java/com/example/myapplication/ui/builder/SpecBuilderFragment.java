@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentSpecBuilderBinding;
 import com.example.myapplication.model.BuildSlot;
-import com.example.myapplication.ui.builder.adapters.BuildSlotAdapter;
+import com.example.myapplication.adapter.BuildSlotAdapter;
 import com.example.myapplication.viewmodel.AuthViewModel;
 import com.example.myapplication.viewmodel.ShopViewModel;
 
@@ -79,10 +78,19 @@ public class SpecBuilderFragment extends Fragment {
 
         binding.rvBuildSlots.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new BuildSlotAdapter(slotList, slot -> {
-            Bundle bundle = new Bundle();
-            bundle.putString("categoryName", slot.getCategoryId());
-            Navigation.findNavController(requireView()).navigate(R.id.action_specBuilderFragment_to_productListFragment, bundle);
+        adapter = new BuildSlotAdapter(slotList, new BuildSlotAdapter.OnSlotClickListener() {
+            @Override
+            public void onSlotClick(BuildSlot slot) {
+                SpecBuilderFragmentDirections.ActionSpecBuilderFragmentToProductListFragment action =
+                        SpecBuilderFragmentDirections.actionSpecBuilderFragmentToProductListFragment(slot.getCategoryId());
+                Navigation.findNavController(binding.getRoot()).navigate(action);
+            }
+
+            @Override
+            public void onClearClick(BuildSlot slot) {
+                // Tell the ViewModel to clear this category
+                shopViewModel.clearSlot(slot.getCategoryId());
+            }
         });
 
         binding.rvBuildSlots.setAdapter(adapter);

@@ -55,6 +55,35 @@ public class Product implements Serializable {
 
     public Product() {}
 
+    // --- UI/Compatibility Fields (Ignored by Firestore) ---
+    @com.google.firebase.firestore.Exclude
+    private boolean isCompatible = true;
+
+    @com.google.firebase.firestore.Exclude
+    private boolean isWarning = false;
+
+    @com.google.firebase.firestore.Exclude
+    private String compatibilityReason = null;
+
+    @com.google.firebase.firestore.Exclude
+    public boolean isCompatible() { return isCompatible; }
+
+    @com.google.firebase.firestore.Exclude
+    public void setCompatible(boolean compatible) { isCompatible = compatible; }
+
+    @com.google.firebase.firestore.Exclude
+    public boolean isWarning() { return isWarning; }
+
+    @com.google.firebase.firestore.Exclude
+    public void setWarning(boolean warning) { isWarning = warning; }
+
+    @com.google.firebase.firestore.Exclude
+    public String getCompatibilityReason() { return compatibilityReason; }
+
+    @com.google.firebase.firestore.Exclude
+    public void setCompatibilityReason(String compatibilityReason) { this.compatibilityReason = compatibilityReason; }
+
+    //setters and getters
     public void setId(String id) {
         this.id = id;
     }
