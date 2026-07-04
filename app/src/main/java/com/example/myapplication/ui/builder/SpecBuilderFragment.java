@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +17,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentSpecBuilderBinding;
 import com.example.myapplication.model.BuildSlot;
 import com.example.myapplication.adapter.BuildSlotAdapter;
+import com.example.myapplication.model.PcBuild;
 import com.example.myapplication.viewmodel.AuthViewModel;
 import com.example.myapplication.viewmodel.ShopViewModel;
 
@@ -107,20 +109,35 @@ public class SpecBuilderFragment extends Fragment {
         }
 
         authViewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
+            binding.layoutGuestLock.setVisibility(View.GONE);
+            binding.layoutBuilderContent.setVisibility(View.VISIBLE);
+
             if (user == null) {
-                binding.layoutGuestLock.setVisibility(View.VISIBLE);
-                binding.layoutBuilderContent.setVisibility(View.GONE);
-            }
-            else {
-                binding.layoutGuestLock.setVisibility(View.GONE);
-                binding.layoutBuilderContent.setVisibility(View.VISIBLE);
+                binding.btnReviewBuild.setAlpha(0.5f);
+            } else {
+                // משתמש מחובר: הכפתור רגיל
+                binding.btnReviewBuild.setAlpha(1.0f);
             }
         });
     }
 
     private void setupListeners() {
-        binding.btnGoToLogin.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.loginFragment);
+        binding.btnReviewBuild.setOnClickListener(v -> {
+            //1. checks if user is a guest
+            if (authViewModel.getCurrentUser().getValue() == null) {
+                Toast.makeText(getContext(), "You must be logged in in order to save builds", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 2. if user is connected, continue
+            PcBuild build = shopViewModel.getCurrentBuild().getValue();
+            if (build != null) {
+                SpecBuilderFragmentDirections.ActionSpecBuilderFragmentToSummaryFragment action =
+                        SpecBuilderFragmentDirections.actionSpecBuilderFragmentToSummaryFragment(build);
+                Navigation.findNavController(binding.getRoot()).navigate(action);
+            } else {
+                Toast.makeText(getContext(), "Cannot review an empty build", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 

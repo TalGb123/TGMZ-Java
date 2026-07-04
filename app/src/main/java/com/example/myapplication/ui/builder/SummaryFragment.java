@@ -1,66 +1,169 @@
 package com.example.myapplication.ui.builder;
 
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.myapplication.R;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SummaryFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.myapplication.databinding.FragmentBuildSummaryBinding;
+import com.example.myapplication.model.PcBuild;
+import com.example.myapplication.model.Product;
+import com.example.myapplication.viewmodel.AuthViewModel;
+import com.example.myapplication.viewmodel.ShopViewModel;
+
 public class SummaryFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private FragmentBuildSummaryBinding binding;
+    private AuthViewModel authViewModel;
+    private ShopViewModel shopViewModel;
+    private PcBuild currentBuild;
+    private String pendingBuildName = "";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public SummaryFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment BuildSummaryFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SummaryFragment newInstance(String param1, String param2) {
-        SummaryFragment fragment = new SummaryFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentBuildSummaryBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
+        shopViewModel = new ViewModelProvider(requireActivity()).get(ShopViewModel.class);
+
+        // 1. Retrieve the SafeArg
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            currentBuild = SummaryFragmentArgs.fromBundle(getArguments()).getCurrentBuild();
         }
+
+        if (currentBuild == null) {
+            Toast.makeText(getContext(), "Error loading build data", Toast.LENGTH_SHORT).show();
+            Navigation.findNavController(view).popBackStack();
+            return;
+        }
+
+        populateBuildList();
+        setupListeners();
+        setupObservers();
+    }
+
+    private void populateBuildList() {
+        binding.layoutPartsContainer.removeAllViews();
+        double totalCost = 0;
+
+        // Dynamically create rows for selected parts
+        totalCost += addPartRowIfNotNull("CPU", currentBuild.getCpu());
+        totalCost += addPartRowIfNotNull("CPU Cooler", currentBuild.getCpuCooler());
+        totalCost += addPartRowIfNotNull("Motherboard", currentBuild.getMotherboard());
+        totalCost += addPartRowIfNotNull("Memory (RAM)", currentBuild.getRam());
+        totalCost += addPartRowIfNotNull("Storage", currentBuild.getStorage());
+        totalCost += addPartRowIfNotNull("Video Card", currentBuild.getGpu());
+        totalCost += addPartRowIfNotNull("Power Supply", currentBuild.getPowerSupply());
+        totalCost += addPartRowIfNotNull("PC Case", currentBuild.getPcCase());
+
+        binding.tvSummaryTotal.setText(String.format(java.util.Locale.US, "₪%.2f", totalCost));
+    }
+
+    private double addPartRowIfNotNull(String category, Product part) {
+        if (part == null) return 0.0;
+
+        // Create a simple row dynamically
+        LinearLayout row = new LinearLayout(getContext());
+        row.setOrientation(LinearLayout.VERTICAL);
+        row.setPadding(0, 16, 0, 16);
+
+        TextView tvCategory = new TextView(getContext());
+        tvCategory.setText(category);
+        tvCategory.setTextSize(14);
+        tvCategory.setTextColor(Color.GRAY);
+
+        TextView tvName = new TextView(getContext());
+        tvName.setText(part.getName());
+        tvName.setTextSize(16);
+        tvName.setTypeface(null, android.graphics.Typeface.BOLD);
+        tvName.setTextColor(getContext().getColor(android.R.color.tab_indicator_text));
+
+        TextView tvPrice = new TextView(getContext());
+        tvPrice.setText(String.format(java.util.Locale.US, "₪%.2f", part.getPrice()));
+        tvPrice.setTextColor(getContext().getColor(android.R.color.holo_green_dark));
+
+        row.addView(tvCategory);
+        row.addView(tvName);
+        row.addView(tvPrice);
+
+        binding.layoutPartsContainer.addView(row);
+        return part.getPrice();
+    }
+
+    private void setupListeners() {
+        // Edit Build (Goes back to Spec Builder)
+        binding.btnEditBuild.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+
+        // Save Build (Triggers Name Dialog)
+        binding.btnSaveToProfile.setOnClickListener(v -> showNameBuildDialog());
+    }
+
+    private void showNameBuildDialog() {
+        EditText input = new EditText(getContext());
+        input.setHint("Enter a name for this build (e.g. Gaming Rig)");
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Save Build")
+                .setMessage("Name your custom PC build:")
+                .setView(input)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String name = input.getText().toString().trim();
+                    if (!name.isEmpty()) {
+                        pendingBuildName = name;
+                        shopViewModel.saveBuildToDatabase(currentBuild); // Step 1: Save to Global
+                    } else {
+                        Toast.makeText(getContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void setupObservers() {
+        shopViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            binding.progressSaving.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            binding.btnSaveToProfile.setEnabled(!isLoading);
+        });
+
+        // Step 2: Listen for the global save to finish, then save to User Profile
+        shopViewModel.getNewlySavedBuildId().observe(getViewLifecycleOwner(), newBuildId -> {
+            if (newBuildId != null) {
+                shopViewModel.resetNewlySavedBuildId(); // Reset to prevent double triggers
+                authViewModel.saveBuildToProfile(newBuildId, pendingBuildName); // Step 3
+            }
+        });
+
+        // Step 4: Listen for the user profile save to finish and exit
+        authViewModel.getAuthMessage().observe(getViewLifecycleOwner(), msg -> {
+            if (msg != null && msg.contains("successfully")) {
+                Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                Navigation.findNavController(binding.getRoot()).popBackStack(); // Go back to builder
+            }
+        });
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_build_summary, container, false);
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

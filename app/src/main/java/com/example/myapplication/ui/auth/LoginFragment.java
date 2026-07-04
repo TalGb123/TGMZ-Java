@@ -35,6 +35,9 @@ public class LoginFragment extends Fragment{
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         sharedPreferences = requireActivity().getSharedPreferences("TGMZ_PREFS", Context.MODE_PRIVATE);
 
+        // GUARANTEE NO GHOST SESSIONS
+        authViewModel.signOut();
+
         loadSavedCredentials();
         setupObservers();
         setupListeners();

@@ -45,6 +45,9 @@
         <action
             android:id="@+id/action_specBuilderFragment_to_productListFragment"
             app:destination="@id/productListFragment" />
+        <action
+            android:id="@+id/action_specBuilderFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment" />
     </fragment>
     <fragment
         android:id="@+id/productListFragment"
@@ -54,6 +57,17 @@
         <argument
             android:name="categoryName"
             app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/summaryFragment"
+        android:name="com.example.myapplication.ui.builder.SummaryFragment"
+        android:label="Build Summary"
+        tools:layout="@layout/fragment_build_summary">
+
+        <argument
+            android:name="currentBuild"
+            app:argType="com.example.myapplication.model.PcBuild" />
     </fragment>
 
 </navigation>

@@ -95,6 +95,13 @@
                 android:textStyle="bold"
                 android:textColor="?attr/colorPrimary" />
         </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_review_build"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Review &amp; Save Build"
+            android:layout_margin="16dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

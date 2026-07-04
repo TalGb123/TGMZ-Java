@@ -1,5 +1,7 @@
 package com.example.myapplication.model;
 
+import java.util.List;
+
 public class User {
     private String id;
     private String name;
@@ -7,6 +9,7 @@ public class User {
     private String phone;
     private String birthday;
     private String role;
+    private List<SavedBuild> savedBuilds;
 
     public User() {}
 
@@ -26,6 +29,7 @@ public class User {
     public String getPhone() { return phone; }
     public String getBirthday() { return birthday; }
     public String getRole() { return role; }
+    public List<SavedBuild> getSavedBuilds() { return savedBuilds; }
 
 
     public void setId(String id) { this.id = id; }
@@ -34,4 +38,5 @@ public class User {
     public void setPhone(String phone) { this.phone = phone; }
     public void setBirthday(String birthday) { this.birthday = birthday; }
     public void setRole(String role) { this.role = role; }
+    public void setSavedBuilds(List<SavedBuild> savedBuilds) { this.savedBuilds = savedBuilds; }
 }

@@ -27,7 +27,7 @@ public class AuthViewModel extends ViewModel{
     public LiveData<User> getCurrentUser() { return currentUser; }
 
     /**
-     * פונקציית התחברות (Login via Firebase Auth).
+     * (Login via Firebase Auth).
      */
     public void login(String email, String password) {
         isLoading.setValue(true);
@@ -42,7 +42,7 @@ public class AuthViewModel extends ViewModel{
     }
 
     /**
-     * פונקציית הרשמה (Register via Firebase Auth -> Save profile to Firestore).
+     *(Register via Firebase Auth -> Save profile to Firestore).
      */
     public void register(String id, String name, String email, String phone, String birthday, String password) {
         isLoading.setValue(true);
@@ -74,7 +74,6 @@ public class AuthViewModel extends ViewModel{
     }
 
     /**
-     * מושך את נתוני המשתמש מ-Firestore לפי ה-UID של Auth.
      * Fetches user profile from Firestore.
      */
     public void fetchUserData(String uid) {
@@ -94,7 +93,6 @@ public class AuthViewModel extends ViewModel{
     }
 
     /**
-     * בודק אם משתמש כבר מחובר כשהאפליקציה נדלקת.
      * Check if user is already logged in on app startup.
      */
     public void checkSession() {
@@ -102,5 +100,37 @@ public class AuthViewModel extends ViewModel{
         if (user != null) {
             fetchUserData(user.getUid());
         }
+    }
+
+    /**
+     * (Adds a build to the user's profile array).
+     */
+    public void saveBuildToProfile(String buildRefId, String buildName) {
+        FirebaseUser firebaseUser = auth.getCurrentUser();
+        if (firebaseUser == null) return;
+
+        isLoading.setValue(true);
+        com.example.myapplication.model.SavedBuild savedBuild =
+                new com.example.myapplication.model.SavedBuild(buildRefId, buildName, System.currentTimeMillis());
+
+        db.collection("users").document(firebaseUser.getUid())
+                .update("savedBuilds", com.google.firebase.firestore.FieldValue.arrayUnion(savedBuild))
+                .addOnSuccessListener(aVoid -> {
+                    isLoading.setValue(false);
+                    authMessage.setValue("Build saved to your profile successfully!");
+                    fetchUserData(firebaseUser.getUid()); // Refresh local data to show the new array
+                })
+                .addOnFailureListener(e -> {
+                    isLoading.setValue(false);
+                    authMessage.setValue("Error saving to profile: " + e.getMessage());
+                });
+    }
+
+    /**
+     * Clears the Firebase native session.
+     */
+    public void signOut() {
+        auth.signOut();
+        currentUser.setValue(null);
     }
 }

@@ -23,6 +23,9 @@ public class ShopViewModel extends ViewModel {
 
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
+    // LiveData to trigger the next step once the global build is saved
+    private final MutableLiveData<String> newlySavedBuildId = new MutableLiveData<>(null);
+
     public LiveData<PcBuild> getCurrentBuild() {
         return currentBuild;
     }
@@ -33,6 +36,38 @@ public class ShopViewModel extends ViewModel {
 
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
+    }
+
+    public LiveData<String> getNewlySavedBuildId() { return newlySavedBuildId; }
+
+    public void resetNewlySavedBuildId() { newlySavedBuildId.setValue(null); }
+
+    /**
+     *(Saves full build to global collection).
+     */
+    public void saveBuildToDatabase(PcBuild build) {
+        // Grab the current user
+        com.google.firebase.auth.FirebaseUser currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null) {
+            Log.e("ShopViewModel", "Cannot save build: No user logged in.");
+            return;
+        }
+
+        // INJECT THE USER ID TO PASS THE FIRESTORE SECURITY RULE
+        build.setUserId(currentUser.getUid());
+
+        isLoading.setValue(true);
+        db.collection("builds").add(build)
+                .addOnSuccessListener(documentReference -> {
+                    isLoading.setValue(false);
+                    newlySavedBuildId.setValue(documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    isLoading.setValue(false);
+                    Log.e("ShopViewModel", "Failed to save build to global collection", e);
+                    // If you want it to stop failing silently, you can trigger a Toast here via a LiveData message!
+                });
     }
 
     public void setCpu(Product cpu) {

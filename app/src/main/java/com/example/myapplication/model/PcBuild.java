@@ -3,6 +3,7 @@ package com.example.myapplication.model;
 import java.io.Serializable;
 
 public class PcBuild implements Serializable {
+    private String userId;
     private Product cpu;
     private Product cpuCooler;
     private Product motherboard;
@@ -13,6 +14,7 @@ public class PcBuild implements Serializable {
     private Product pcCase;
 
     public PcBuild() {}
+    public String getUserId() { return userId; }
     public Product getCpu() { return cpu; }
     public Product getCpuCooler() { return cpuCooler; }
     public Product getMotherboard() { return motherboard; }
@@ -21,6 +23,7 @@ public class PcBuild implements Serializable {
     public Product getPowerSupply() { return powerSupply; }
     public Product getGpu() { return gpu; }
     public Product getPcCase() { return pcCase; }
+    public void setUserId(String userId) { this.userId = userId; }
     public void setCpu(Product cpu) { this.cpu = cpu; }
     public void setCpuCooler(Product cpuCooler) { this.cpuCooler = cpuCooler; }
     public void setMotherboard(Product motherboard) { this.motherboard = motherboard; }
