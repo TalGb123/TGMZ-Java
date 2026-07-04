@@ -32,8 +32,6 @@ public class LoginFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Share the ViewModel across the Activity so the whole app knows who is logged in
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         sharedPreferences = requireActivity().getSharedPreferences("TGMZ_PREFS", Context.MODE_PRIVATE);
 
@@ -46,9 +44,7 @@ public class LoginFragment extends Fragment{
         binding.btnLogin.setOnClickListener(v -> handleLogin());
 
         binding.btnGuest.setOnClickListener(v -> {
-            // TODO: Replace with actual action ID from your nav_graph.xml
-            // Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_shopFragment);
-            Toast.makeText(requireContext(), "Continuing as Guest", Toast.LENGTH_SHORT).show();
+            Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_categoryListFragment);
         });
 
         binding.tvRegisterLink.setOnClickListener(v -> {
@@ -77,7 +73,8 @@ public class LoginFragment extends Fragment{
                     .putString("saved_email", email)
                     .putString("saved_password", password)
                     .apply();
-        } else {
+        }
+        else {
             sharedPreferences.edit().clear().apply();
         }
 
@@ -108,12 +105,7 @@ public class LoginFragment extends Fragment{
 
         authViewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
-                // TEMPORARY: Just show a success dialog instead of navigating
-                new androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                        .setTitle("Success")
-                        .setMessage("Welcome back, " + user.getName() + "! (Shop page coming soon)")
-                        .setPositiveButton("OK", null)
-                        .show();
+                Navigation.findNavController(requireView()).navigate(R.id.action_loginFragment_to_categoryListFragment);
             }
         });
     }
@@ -121,6 +113,6 @@ public class LoginFragment extends Fragment{
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Prevent memory leaks
+        binding = null;
     }
 }
