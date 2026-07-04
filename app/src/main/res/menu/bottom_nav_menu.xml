@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/categoryListFragment"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
-        android:title="Shop" />
-
-    <item
         android:id="@+id/specBuilderFragment"
         android:icon="@android:drawable/ic_menu_edit"
         android:title="PC Builder" />
+
+    <item
+        android:id="@+id/profileFragment"
+        android:icon="@android:drawable/ic_menu_myplaces"
+        android:title="Profile" />
 </menu>

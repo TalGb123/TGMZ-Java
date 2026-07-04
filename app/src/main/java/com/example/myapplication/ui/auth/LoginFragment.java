@@ -35,7 +35,6 @@ public class LoginFragment extends Fragment{
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         sharedPreferences = requireActivity().getSharedPreferences("TGMZ_PREFS", Context.MODE_PRIVATE);
 
-        // GUARANTEE NO GHOST SESSIONS
         authViewModel.signOut();
 
         loadSavedCredentials();
@@ -47,7 +46,7 @@ public class LoginFragment extends Fragment{
         binding.btnLogin.setOnClickListener(v -> handleLogin());
 
         binding.btnGuest.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_categoryListFragment);
+            Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_specBuilderFragment);
         });
 
         binding.tvRegisterLink.setOnClickListener(v -> {
@@ -108,7 +107,7 @@ public class LoginFragment extends Fragment{
 
         authViewModel.getCurrentUser().observe(getViewLifecycleOwner(), user -> {
             if (user != null) {
-                Navigation.findNavController(requireView()).navigate(R.id.action_loginFragment_to_categoryListFragment);
+                Navigation.findNavController(requireView()).navigate(R.id.action_loginFragment_to_specBuilderFragment);
             }
         });
     }

@@ -37,7 +37,6 @@ public class ProductListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (getArguments() != null) {
-            // Retrieving data using SafeArgs
             categoryName = ProductListFragmentArgs.fromBundle(getArguments()).getCategoryName();
             binding.tvCategoryTitle.setText("Select " + categoryName);
         }
@@ -54,6 +53,30 @@ public class ProductListFragment extends Fragment {
         if (categoryName != null) {
             shopViewModel.fetchProductsByCategory(categoryName);
         }
+
+        binding.btnSearch.setOnClickListener(v -> {
+            int visibility = (binding.searchView.getVisibility() == View.VISIBLE) ? View.GONE : View.VISIBLE;
+            binding.searchView.setVisibility(visibility);
+            if (visibility == View.GONE) binding.searchView.setQuery("", false);
+        });
+
+        binding.searchView.setOnCloseListener(() -> {
+            binding.searchView.setVisibility(View.GONE);
+            binding.searchView.setQuery("", false);
+            binding.searchView.clearFocus();
+            return true;
+        });
+
+        binding.searchView.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) { return false; }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return true;
+            }
+        });
     }
 
     private void setupRecyclerView() {

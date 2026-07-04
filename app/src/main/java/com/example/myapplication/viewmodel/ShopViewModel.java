@@ -23,7 +23,6 @@ public class ShopViewModel extends ViewModel {
 
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
 
-    // LiveData to trigger the next step once the global build is saved
     private final MutableLiveData<String> newlySavedBuildId = new MutableLiveData<>(null);
 
     public LiveData<PcBuild> getCurrentBuild() {
@@ -42,11 +41,10 @@ public class ShopViewModel extends ViewModel {
 
     public void resetNewlySavedBuildId() { newlySavedBuildId.setValue(null); }
 
-    /**
-     *(Saves full build to global collection).
-     */
+    private final MutableLiveData<PcBuild> viewedBuild = new MutableLiveData<>();
+    public LiveData<PcBuild> getViewedBuild() { return viewedBuild; }
+
     public void saveBuildToDatabase(PcBuild build) {
-        // Grab the current user
         com.google.firebase.auth.FirebaseUser currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
@@ -54,7 +52,6 @@ public class ShopViewModel extends ViewModel {
             return;
         }
 
-        // INJECT THE USER ID TO PASS THE FIRESTORE SECURITY RULE
         build.setUserId(currentUser.getUid());
 
         isLoading.setValue(true);
@@ -66,7 +63,6 @@ public class ShopViewModel extends ViewModel {
                 .addOnFailureListener(e -> {
                     isLoading.setValue(false);
                     Log.e("ShopViewModel", "Failed to save build to global collection", e);
-                    // If you want it to stop failing silently, you can trigger a Toast here via a LiveData message!
                 });
     }
 
@@ -147,7 +143,6 @@ public class ShopViewModel extends ViewModel {
                         Product product = document.toObject(Product.class);
                         product.setId(document.getId());
 
-                        // Evaluate compatibility before adding to the list
                         if (current != null) {
                             com.example.myapplication.utils.CompatibilityEngine.evaluate(product, current);
                         }
@@ -155,7 +150,6 @@ public class ShopViewModel extends ViewModel {
                         productsList.add(product);
                     }
 
-                    // Sort: Compatible first, Warnings second, Errors last
                     productsList.sort((p1, p2) -> {
                         int score1 = !p1.isCompatible() ? 3 : (p1.isWarning() ? 2 : 1);
                         int score2 = !p2.isCompatible() ? 3 : (p2.isWarning() ? 2 : 1);
@@ -190,7 +184,6 @@ public class ShopViewModel extends ViewModel {
     }
 
     private void recalculateBuildCompatibility(PcBuild build) {
-        // This makes selected parts check themselves against the rest of the build
         if (build.getCpu() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getCpu(), build);
         if (build.getCpuCooler() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getCpuCooler(), build);
         if (build.getMotherboard() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getMotherboard(), build);
@@ -199,5 +192,26 @@ public class ShopViewModel extends ViewModel {
         if (build.getGpu() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getGpu(), build);
         if (build.getPcCase() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getPcCase(), build);
         if (build.getPowerSupply() != null) com.example.myapplication.utils.CompatibilityEngine.evaluate(build.getPowerSupply(), build);
+    }
+
+    public void fetchBuildById(String buildId) {
+        isLoading.setValue(true);
+        db.collection("builds").document(buildId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    isLoading.setValue(false);
+                    if (documentSnapshot.exists()) {
+                        PcBuild build = documentSnapshot.toObject(PcBuild.class);
+                        viewedBuild.setValue(build);
+                    }
+                })
+                .addOnFailureListener(e -> isLoading.setValue(false));
+    }
+
+    public void loadBuildIntoEditor(PcBuild build) {
+        currentBuild.setValue(build);
+    }
+
+    public void clearViewedBuild() {
+        viewedBuild.setValue(null);
     }
 }

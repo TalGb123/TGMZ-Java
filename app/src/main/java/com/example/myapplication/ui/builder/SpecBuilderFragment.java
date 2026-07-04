@@ -90,7 +90,6 @@ public class SpecBuilderFragment extends Fragment {
 
             @Override
             public void onClearClick(BuildSlot slot) {
-                // Tell the ViewModel to clear this category
                 shopViewModel.clearSlot(slot.getCategoryId());
             }
         });
@@ -114,8 +113,8 @@ public class SpecBuilderFragment extends Fragment {
 
             if (user == null) {
                 binding.btnReviewBuild.setAlpha(0.5f);
-            } else {
-                // משתמש מחובר: הכפתור רגיל
+            }
+            else {
                 binding.btnReviewBuild.setAlpha(1.0f);
             }
         });
@@ -123,19 +122,18 @@ public class SpecBuilderFragment extends Fragment {
 
     private void setupListeners() {
         binding.btnReviewBuild.setOnClickListener(v -> {
-            //1. checks if user is a guest
             if (authViewModel.getCurrentUser().getValue() == null) {
                 Toast.makeText(getContext(), "You must be logged in in order to save builds", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // 2. if user is connected, continue
             PcBuild build = shopViewModel.getCurrentBuild().getValue();
             if (build != null) {
                 SpecBuilderFragmentDirections.ActionSpecBuilderFragmentToSummaryFragment action =
                         SpecBuilderFragmentDirections.actionSpecBuilderFragmentToSummaryFragment(build);
                 Navigation.findNavController(binding.getRoot()).navigate(action);
-            } else {
+            }
+            else {
                 Toast.makeText(getContext(), "Cannot review an empty build", Toast.LENGTH_SHORT).show();
             }
         });

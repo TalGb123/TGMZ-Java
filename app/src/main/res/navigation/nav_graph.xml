@@ -14,8 +14,8 @@
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/registerFragment" />
         <action
-            android:id="@+id/action_loginFragment_to_categoryListFragment"
-            app:destination="@id/categoryListFragment" />
+            android:id="@+id/action_loginFragment_to_specBuilderFragment"
+            app:destination="@id/specBuilderFragment" />
     </fragment>
 
     <fragment
@@ -25,29 +25,19 @@
         tools:layout="@layout/fragment_register" />
 
     <fragment
-        android:id="@+id/categoryListFragment"
-        android:name="com.example.myapplication.ui.builder.CategoryListFragment"
-        android:label="Shop"
-        tools:layout="@layout/fragment_category_list" >
-        <action
-            android:id="@+id/action_categoryListFragment_to_specBuilderFragment"
-            app:destination="@id/specBuilderFragment" />
-    </fragment>
-
-    <fragment
         android:id="@+id/specBuilderFragment"
         android:name="com.example.myapplication.ui.builder.SpecBuilderFragment"
         android:label="PC Builder"
         tools:layout="@layout/fragment_spec_builder" >
-        <action
-            android:id="@+id/action_specBuilderFragment_to_categoryListFragment"
-            app:destination="@id/categoryListFragment" />
         <action
             android:id="@+id/action_specBuilderFragment_to_productListFragment"
             app:destination="@id/productListFragment" />
         <action
             android:id="@+id/action_specBuilderFragment_to_summaryFragment"
             app:destination="@id/summaryFragment" />
+        <action
+            android:id="@+id/action_specBuilderFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
     <fragment
         android:id="@+id/productListFragment"
@@ -68,6 +58,19 @@
         <argument
             android:name="currentBuild"
             app:argType="com.example.myapplication.model.PcBuild" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.myapplication.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
 </navigation>

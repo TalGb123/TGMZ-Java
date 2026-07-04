@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 
+import com.example.myapplication.R;
 import com.example.myapplication.databinding.FragmentBuildSummaryBinding;
 import com.example.myapplication.model.PcBuild;
 import com.example.myapplication.model.Product;
@@ -45,7 +46,6 @@ public class SummaryFragment extends Fragment {
         authViewModel = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
         shopViewModel = new ViewModelProvider(requireActivity()).get(ShopViewModel.class);
 
-        // 1. Retrieve the SafeArg
         if (getArguments() != null) {
             currentBuild = SummaryFragmentArgs.fromBundle(getArguments()).getCurrentBuild();
         }
@@ -65,7 +65,6 @@ public class SummaryFragment extends Fragment {
         binding.layoutPartsContainer.removeAllViews();
         double totalCost = 0;
 
-        // Dynamically create rows for selected parts
         totalCost += addPartRowIfNotNull("CPU", currentBuild.getCpu());
         totalCost += addPartRowIfNotNull("CPU Cooler", currentBuild.getCpuCooler());
         totalCost += addPartRowIfNotNull("Motherboard", currentBuild.getMotherboard());
@@ -81,7 +80,6 @@ public class SummaryFragment extends Fragment {
     private double addPartRowIfNotNull(String category, Product part) {
         if (part == null) return 0.0;
 
-        // Create a simple row dynamically
         LinearLayout row = new LinearLayout(getContext());
         row.setOrientation(LinearLayout.VERTICAL);
         row.setPadding(0, 16, 0, 16);
@@ -110,10 +108,19 @@ public class SummaryFragment extends Fragment {
     }
 
     private void setupListeners() {
-        // Edit Build (Goes back to Spec Builder)
-        binding.btnEditBuild.setOnClickListener(v -> Navigation.findNavController(v).popBackStack());
+        binding.btnEditBuild.setOnClickListener(v -> {
+            shopViewModel.loadBuildIntoEditor(currentBuild);
 
-        // Save Build (Triggers Name Dialog)
+            Navigation.findNavController(v).popBackStack();
+
+            com.google.android.material.bottomnavigation.BottomNavigationView bottomNav =
+                    requireActivity().findViewById(R.id.bottom_nav);
+
+            if (bottomNav != null) {
+                bottomNav.setSelectedItemId(R.id.specBuilderFragment);
+            }
+        });
+
         binding.btnSaveToProfile.setOnClickListener(v -> showNameBuildDialog());
     }
 
@@ -129,8 +136,9 @@ public class SummaryFragment extends Fragment {
                     String name = input.getText().toString().trim();
                     if (!name.isEmpty()) {
                         pendingBuildName = name;
-                        shopViewModel.saveBuildToDatabase(currentBuild); // Step 1: Save to Global
-                    } else {
+                        shopViewModel.saveBuildToDatabase(currentBuild);
+                    }
+                    else {
                         Toast.makeText(getContext(), "Name cannot be empty", Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -144,19 +152,18 @@ public class SummaryFragment extends Fragment {
             binding.btnSaveToProfile.setEnabled(!isLoading);
         });
 
-        // Step 2: Listen for the global save to finish, then save to User Profile
         shopViewModel.getNewlySavedBuildId().observe(getViewLifecycleOwner(), newBuildId -> {
             if (newBuildId != null) {
-                shopViewModel.resetNewlySavedBuildId(); // Reset to prevent double triggers
-                authViewModel.saveBuildToProfile(newBuildId, pendingBuildName); // Step 3
+                shopViewModel.resetNewlySavedBuildId();
+                authViewModel.saveBuildToProfile(newBuildId, pendingBuildName);
             }
         });
 
-        // Step 4: Listen for the user profile save to finish and exit
         authViewModel.getAuthMessage().observe(getViewLifecycleOwner(), msg -> {
-            if (msg != null && msg.contains("successfully")) {
+            if (msg != null && msg.equals("Build saved to your profile successfully!")) {
                 Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
-                Navigation.findNavController(binding.getRoot()).popBackStack(); // Go back to builder
+                authViewModel.clearMessage();
+                Navigation.findNavController(binding.getRoot()).popBackStack();
             }
         });
     }

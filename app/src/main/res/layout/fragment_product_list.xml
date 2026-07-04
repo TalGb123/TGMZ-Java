@@ -20,8 +20,10 @@
 
         <ImageView
             android:id="@+id/btn_back"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:contentDescription="Go back"
             android:src="@android:drawable/ic_menu_revert"
             app:tint="?attr/colorOnSurface"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -41,8 +43,10 @@
 
         <ImageView
             android:id="@+id/btn_search"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:contentDescription="Search products"
             android:src="@android:drawable/ic_menu_search"
             app:tint="?attr/colorOnSurface"
             android:background="?attr/selectableItemBackgroundBorderless"
@@ -50,12 +54,22 @@
             android:focusable="true"/>
     </LinearLayout>
 
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/searchView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="?attr/colorSurface"
+        app:queryHint="Search products..."
+        app:iconifiedByDefault="false"
+        app:layout_constraintTop_toBottomOf="@id/top_bar" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintTop_toBottomOf="@id/searchView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -66,7 +80,7 @@
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintTop_toBottomOf="@id/searchView"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

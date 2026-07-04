@@ -49,31 +49,29 @@ public class BuildSlotAdapter extends RecyclerView.Adapter<BuildSlotAdapter.Slot
             Glide.with(holder.itemView.getContext()).load(p.getImage()).into(holder.binding.ivSlotImage);
             holder.binding.ivSlotImage.setColorFilter(null);
 
-            // Show Clear button, hide Add icon
             holder.binding.btnClearSlot.setVisibility(View.VISIBLE);
             holder.binding.ivActionIcon.setVisibility(View.GONE);
 
-            // Check cross-compatibility of the current build
             if (!p.isCompatible()) {
                 holder.binding.ivAlertIcon.setVisibility(View.VISIBLE);
                 holder.binding.ivAlertIcon.setColorFilter(android.graphics.Color.RED);
-            } else if (p.isWarning()) {
+            }
+            else if (p.isWarning()) {
                 holder.binding.ivAlertIcon.setVisibility(View.VISIBLE);
                 holder.binding.ivAlertIcon.setColorFilter(android.graphics.Color.parseColor("#CC8400"));
-            } else {
+            }
+            else {
                 holder.binding.ivAlertIcon.setVisibility(View.GONE);
             }
 
-            // Set Clear listener
             holder.binding.btnClearSlot.setOnClickListener(v -> listener.onClearClick(slot));
 
-        } else {
+        }
+        else {
             holder.binding.tvSelectedProduct.setText(holder.itemView.getContext().getString(R.string.empty_slot_text));
             holder.binding.tvSelectedProduct.setTextColor(holder.itemView.getContext().getColor(android.R.color.darker_gray));
             holder.binding.ivSlotImage.setImageResource(slot.getIconResId());
             holder.binding.ivSlotImage.setColorFilter(holder.itemView.getContext().getColor(android.R.color.darker_gray));
-
-            // Hide Clear button, show Add icon, hide alert
             holder.binding.btnClearSlot.setVisibility(View.GONE);
             holder.binding.ivActionIcon.setVisibility(View.VISIBLE);
             holder.binding.ivAlertIcon.setVisibility(View.GONE);

@@ -49,8 +49,6 @@ public class RegisterFragment extends Fragment {
 
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
-
-        // Default to 18 years ago to make scrolling easier
         calendar.add(Calendar.YEAR, -18);
 
         DatePickerDialog dialog = new DatePickerDialog(
@@ -59,7 +57,6 @@ public class RegisterFragment extends Fragment {
                     selectedBirthday = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
                     binding.btnBirthday.setText(selectedBirthday);
 
-                    // Calculate Age
                     Calendar today = Calendar.getInstance();
                     userAge = today.get(Calendar.YEAR) - year;
                     if (today.get(Calendar.MONTH) < month || (today.get(Calendar.MONTH) == month && today.get(Calendar.DAY_OF_MONTH) < dayOfMonth)) {
@@ -68,7 +65,8 @@ public class RegisterFragment extends Fragment {
 
                     if (userAge < 21) {
                         binding.tvBirthdayError.setVisibility(View.VISIBLE);
-                    } else {
+                    }
+                    else {
                         binding.tvBirthdayError.setVisibility(View.GONE);
                     }
                 },
@@ -77,7 +75,6 @@ public class RegisterFragment extends Fragment {
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
 
-        // Prevent selecting future dates
         dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         dialog.show();
     }
@@ -89,25 +86,29 @@ public class RegisterFragment extends Fragment {
         if (!ValidatorUtils.isValidIsraeliID(id)) {
             binding.idInputLayout.setError(getString(R.string.error_invalid_id));
             isValid = false;
-        } else binding.idInputLayout.setError(null);
+        }
+        else binding.idInputLayout.setError(null);
 
         String name = binding.etName.getText().toString().trim();
         if (name.length() < 2) {
             binding.nameInputLayout.setError(getString(R.string.error_invalid_name));
             isValid = false;
-        } else binding.nameInputLayout.setError(null);
+        }
+        else binding.nameInputLayout.setError(null);
 
         String email = binding.etEmail.getText().toString().trim();
         if (!email.matches("^[a-zA-Z0-9._%+-]+@(walla|gmail)\\.(com|co\\.il)$")) {
             binding.emailInputLayout.setError(getString(R.string.error_invalid_email));
             isValid = false;
-        } else binding.emailInputLayout.setError(null);
+        }
+        else binding.emailInputLayout.setError(null);
 
         String phone = binding.etPhone.getText().toString().trim().replace("-", "");
         if (!phone.matches("^05\\d{8}$")) {
             binding.phoneInputLayout.setError(getString(R.string.error_invalid_phone));
             isValid = false;
-        } else binding.phoneInputLayout.setError(null);
+        }
+        else binding.phoneInputLayout.setError(null);
 
         if (userAge < 21 || selectedBirthday.isEmpty()) {
             binding.tvBirthdayError.setVisibility(View.VISIBLE);
@@ -118,7 +119,8 @@ public class RegisterFragment extends Fragment {
         if (!pass.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$")) {
             binding.passwordInputLayout.setError(getString(R.string.error_weak_password));
             isValid = false;
-        } else binding.passwordInputLayout.setError(null);
+        }
+        else binding.passwordInputLayout.setError(null);
 
         return isValid;
     }
@@ -146,7 +148,6 @@ public class RegisterFragment extends Fragment {
             if (msg != null && !msg.isEmpty()) {
                 Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
                 if (msg.contains("בהצלחה") || msg.toLowerCase().contains("success")) {
-                    // Navigate back to login screen on success
                     Navigation.findNavController(requireView()).navigateUp();
                 }
             }

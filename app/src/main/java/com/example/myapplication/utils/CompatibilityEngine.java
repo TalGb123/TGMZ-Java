@@ -6,9 +6,6 @@ import com.example.myapplication.model.Product;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Evaluates a product against the current PC build state.
- */
 public class CompatibilityEngine {
     public static void evaluate(Product part, PcBuild build) {
         List<String> errors = new ArrayList<>();
