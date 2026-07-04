@@ -28,12 +28,27 @@
         android:id="@+id/categoryListFragment"
         android:name="com.example.myapplication.ui.builder.CategoryListFragment"
         android:label="Shop"
-        tools:layout="@layout/fragment_category_list" />
+        tools:layout="@layout/fragment_category_list" >
+        <action
+            android:id="@+id/action_categoryListFragment_to_specBuilderFragment"
+            app:destination="@id/specBuilderFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/specBuilderFragment"
         android:name="com.example.myapplication.ui.builder.SpecBuilderFragment"
         android:label="PC Builder"
-        tools:layout="@layout/fragment_spec_builder" />
+        tools:layout="@layout/fragment_spec_builder" >
+        <action
+            android:id="@+id/action_specBuilderFragment_to_categoryListFragment"
+            app:destination="@id/categoryListFragment" />
+        <action
+            android:id="@+id/action_specBuilderFragment_to_productListFragment"
+            app:destination="@id/productListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/productListFragment"
+        android:name="com.example.myapplication.ui.builder.ProductListFragment"
+        android:label="ProductListFragment" />
 
 </navigation>
